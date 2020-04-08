@@ -8,7 +8,7 @@ spring:
   jpa:
     database: postgresql
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
   datasource:
     url: jdbc:postgresql://localhost:5432/vancol_db
     username: vancol_user

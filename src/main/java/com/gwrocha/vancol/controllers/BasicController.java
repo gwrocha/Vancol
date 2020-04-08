@@ -17,7 +17,7 @@ public abstract class BasicController<T> {
 	
 	public BasicController(JpaRepository<T, Long> repository) {
 		this.repository = repository;
-		System.out.println("Instancing: " + this.getClass().getName());
+		System.out.println("Instancing " + this.getClass().getSimpleName() + " using BasicController");
 	}
 	
 	@GetMapping

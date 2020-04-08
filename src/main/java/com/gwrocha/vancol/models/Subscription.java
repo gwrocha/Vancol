@@ -24,7 +24,7 @@ public class Subscription implements Serializable {
 	private Long Id;
 	
 	@ManyToOne
-	private Running runnig;
+	private Running running;
 	
 	@ManyToOne
 	private Runner runner;
