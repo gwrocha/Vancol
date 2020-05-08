@@ -1,11 +1,15 @@
 package com.gwrocha.vancol.controllers.dto;
 
+import java.io.Serializable;
+
 import com.gwrocha.vancol.models.Running;
 
 import lombok.Data;
 
 @Data
-public class RunningResponse {
+public class RunningResponse implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	

@@ -1,14 +1,17 @@
 package com.gwrocha.vancol.controllers.dto;
 
+import java.io.Serializable;
+
 import com.gwrocha.vancol.models.Runner;
 import com.gwrocha.vancol.models.Running;
 import com.gwrocha.vancol.models.Subscription;
-import com.gwrocha.vancol.models.enums.StatusSubscription;
 
 import lombok.Data;
 
 @Data
-public class SubscriptionResponse {
+public class SubscriptionResponse  implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	
