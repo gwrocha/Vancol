@@ -2,12 +2,16 @@ package com.gwrocha.vancol.controllers;
 
 import static java.util.stream.Collectors.toSet;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,9 +29,12 @@ public class RunningController extends BasicController<Running>{
 	@Autowired
 	private SubscriptionRepository subRepository;
 	
+	private RunningRepository runningRepo;
+	
 	@Autowired
 	public RunningController(RunningRepository runningRepo) {
 		super(runningRepo);
+		this.runningRepo = runningRepo;
 	}
 	
 	@GetMapping
@@ -40,4 +47,25 @@ public class RunningController extends BasicController<Running>{
 		return ResponseEntity.ok(subscriptionsResponse);
 	}
 	
+	@PostMapping
+	public ResponseEntity<Running> save(@RequestBody Running running) {
+		Running runningSaved = runningRepo.save(running);
+		return ResponseEntity.ok(runningSaved);
+	}
+
+	@PutMapping
+	public ResponseEntity<Running> update(@RequestBody Running running) {
+		boolean present = Optional.ofNullable(running)
+			.map(Running::getId)
+			.map(runningRepo::findById)
+			.map(op -> op.orElse(null))
+			.isPresent();
+		
+		if(!present)
+			return ResponseEntity.notFound().build();
+		
+		Running runningUpdated = runningRepo.save(running);
+		return ResponseEntity.ok(runningUpdated);
+	}
+
 }
