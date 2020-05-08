@@ -3,9 +3,11 @@ package com.gwrocha.vancol.config;
 import static com.gwrocha.vancol.models.enums.Gender.FEMALE;
 import static com.gwrocha.vancol.models.enums.Gender.MALE;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Component;
 import com.gwrocha.vancol.models.Runner;
 import com.gwrocha.vancol.models.Running;
 import com.gwrocha.vancol.models.Subscription;
+import com.gwrocha.vancol.models.enums.StatusRunnig;
+import com.gwrocha.vancol.models.enums.StatusSubscription;
 import com.gwrocha.vancol.repositories.RunnerRepository;
 import com.gwrocha.vancol.repositories.RunningRepository;
 import com.gwrocha.vancol.repositories.SubscriptionRepository;
@@ -55,6 +59,7 @@ public class InitializerDataBase {
 			Subscription sub =new Subscription();
 			sub.setRunner(runner);
 			sub.setRunning(runningSaoSilvestre);
+			sub.setStatus(getStatusSubscription());
 			subRepo.save(sub);
 		});
 		
@@ -66,13 +71,20 @@ public class InitializerDataBase {
 			Subscription sub =new Subscription();
 			sub.setRunner(runner);
 			sub.setRunning(runningDesafio42k);
+			sub.setStatus(getStatusSubscription());
 			subRepo.save(sub);
 		});
-		
-		
-		
+
 	}
 
+	private StatusSubscription getStatusSubscription() {
+		int ordinal = new Random().nextInt(StatusSubscription.values().length);
+		for(StatusSubscription status : StatusSubscription.values()) {
+			if(status.ordinal() == ordinal)
+				return status;
+		}
+		return null;
+	}
 
 	private void insertCorredores() {
 
@@ -139,6 +151,9 @@ public class InitializerDataBase {
 		runningSaoSilvestre.setDate(LocalDate.of(2020, 12, 31));
 		runningSaoSilvestre.setTime(LocalTime.of(6, 0));
 		runningSaoSilvestre.setDistance(21D);
+		runningSaoSilvestre.setNeedPayment(true);
+		runningSaoSilvestre.setValueSubscription(new BigDecimal("80"));
+		runningSaoSilvestre.setStatus(StatusRunnig.OPEN);
 		runningRepo.save(runningSaoSilvestre);
 		
 		runningDesafio42k = new Running();
@@ -146,6 +161,9 @@ public class InitializerDataBase {
 		runningDesafio42k.setDate(LocalDate.of(2021, 5, 1));
 		runningDesafio42k.setTime(LocalTime.of(7, 0));
 		runningDesafio42k.setDistance(10.5D);
+		runningDesafio42k.setNeedPayment(false);
+		runningDesafio42k.setValueSubscription(BigDecimal.ZERO);
+		runningDesafio42k.setStatus(StatusRunnig.CLOSE);
 		runningRepo.save(runningDesafio42k);
 		
 	}
