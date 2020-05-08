@@ -33,7 +33,7 @@ public class Subscription implements Serializable {
 	private StatusSubscription status;
 	
 	public Subscription(){
-		status = StatusSubscription.INVALID;
+		status = StatusSubscription.OK;
 	}
 	
 }
