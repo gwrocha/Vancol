@@ -8,6 +8,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.gwrocha.vancol.models.enums.Gender;
 
@@ -23,12 +25,16 @@ public class Runner implements Serializable{
 	@GeneratedValue
 	private Long id;
 	
+	@NotBlank
 	private String firstName;
 	
+	@NotBlank
 	private String lastName;
 	
+	@NotNull 
 	private LocalDate birthDate;
 	
+	@NotNull
 	@Enumerated(EnumType.STRING)
 	private Gender gender;
 	

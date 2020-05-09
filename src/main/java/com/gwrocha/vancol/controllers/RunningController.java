@@ -2,11 +2,13 @@ package com.gwrocha.vancol.controllers;
 
 import static java.util.stream.Collectors.toSet;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,27 +26,30 @@ import lombok.val;
 
 @RestController
 @RequestMapping("/runnings")
-public class RunningController extends BasicController<Running>{
+public class RunningController{
 
 	@Autowired
 	private SubscriptionRepository subRepository;
-	
+
+	@Autowired
 	private RunningRepository runningRepo;
 	
-	@Autowired
-	public RunningController(RunningRepository runningRepo) {
-		super(runningRepo);
-		this.runningRepo = runningRepo;
+	@GetMapping
+	public ResponseEntity<List<Running>> getAll(){
+		val all = runningRepo.findAll();
+		return ResponseEntity.ok(all);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<Running> getOne(@PathVariable("id") Long id){
+		val optional = runningRepo.findById(id);
+		return optional.map(ResponseEntity::ok)
+			.orElse(ResponseEntity.notFound().build());
 	}
 	
-	@GetMapping
-	@RequestMapping("/{running_id}/subscriptions")
-	public ResponseEntity<Set<SubscriptionResponse>> getAll(@PathVariable("running_id") Long id){
-		val allSubscriptions = subRepository.findByRunning_Id(id);
-		Set<SubscriptionResponse> subscriptionsResponse = allSubscriptions.stream()
-			.map(sub -> new SubscriptionResponse(sub.getRunner(), sub))
-			.collect(toSet());
-		return ResponseEntity.ok(subscriptionsResponse);
+	@DeleteMapping("/{id}")
+	public void delete(@PathVariable("id") Long id){
+		runningRepo.deleteById(id);
 	}
 	
 	@PostMapping
@@ -66,6 +71,16 @@ public class RunningController extends BasicController<Running>{
 		
 		Running runningUpdated = runningRepo.save(running);
 		return ResponseEntity.ok(runningUpdated);
+	}
+	
+	@GetMapping
+	@RequestMapping("/{running_id}/subscriptions")
+	public ResponseEntity<Set<SubscriptionResponse>> getAll(@PathVariable("running_id") Long id){
+		val allSubscriptions = subRepository.findByRunning_Id(id);
+		Set<SubscriptionResponse> subscriptionsResponse = allSubscriptions.stream()
+			.map(sub -> new SubscriptionResponse(sub.getRunner(), sub))
+			.collect(toSet());
+		return ResponseEntity.ok(subscriptionsResponse);
 	}
 
 }
