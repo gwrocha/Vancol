@@ -22,6 +22,7 @@ abstract class CrudService<T extends BasicModel> {
 	}
 	
 	public T save(T entity) {
+		entity.setId(null);
 		return repository.save(entity);
 	}
 	
@@ -46,6 +47,14 @@ abstract class CrudService<T extends BasicModel> {
 	
 	public List<T> findAll(){
 		return repository.findAll();
+	}
+	
+	public boolean exists(Long id) {
+		return repository.existsById(id);
+	}
+	
+	public boolean notExists(Long id) {
+		return !exists(id);
 	}
 	
 	public void deleteById(Long id) {

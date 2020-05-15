@@ -5,6 +5,9 @@ import static java.util.stream.Collectors.toSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.validation.Valid;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gwrocha.vancol.controllers.dto.RunningForm;
 import com.gwrocha.vancol.controllers.dto.SubscriptionResponse;
 import com.gwrocha.vancol.exceptions.ObjectNotFoundException;
 import com.gwrocha.vancol.models.Running;
@@ -53,13 +57,15 @@ public class RunningController{
 	}
 	
 	@PostMapping
-	public ResponseEntity<Running> save(@RequestBody Running running) {
+	public ResponseEntity<Running> save(@RequestBody @Valid RunningForm runningForm) {
+		Running running = new ModelMapper().map(runningForm, Running.class);
 		Running runningSaved = runningService.save(running);
 		return ResponseEntity.ok(runningSaved);
 	}
 
 	@PutMapping
-	public ResponseEntity<Running> update(@RequestBody Running running) {
+	public ResponseEntity<Running> update(@RequestBody @Valid RunningForm runningForm) {
+		Running running = new ModelMapper().map(runningForm, Running.class);
 		Running runningUpdated = runningService.update(running);
 		return ResponseEntity.ok(runningUpdated);
 	}

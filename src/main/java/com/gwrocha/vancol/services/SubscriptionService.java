@@ -30,10 +30,16 @@ public class SubscriptionService extends CrudService<Subscription>{
 	}
 
 	public List<Subscription> findAllByRunningId(Long id) {
+		if(runningService.notExists(id))
+			throw new ObjectNotFoundException(Running.class, id);
+		
 		return subscriptionRepository.findByRunning_Id(id);
 	}
 
 	public List<Subscription> findAllByRunnerId(Long id) {
+		if(runnerService.notExists(id))
+			throw new ObjectNotFoundException(Runner.class, id);
+		
 		return subscriptionRepository.findByRunner_Id(id);
 	}
 
