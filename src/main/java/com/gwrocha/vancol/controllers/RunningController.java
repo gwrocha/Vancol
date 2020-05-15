@@ -3,7 +3,6 @@ package com.gwrocha.vancol.controllers;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gwrocha.vancol.controllers.dto.SubscriptionResponse;
+import com.gwrocha.vancol.exceptions.ObjectNotFoundException;
 import com.gwrocha.vancol.models.Running;
-import com.gwrocha.vancol.repositories.RunningRepository;
-import com.gwrocha.vancol.repositories.SubscriptionRepository;
+import com.gwrocha.vancol.services.RunningService;
+import com.gwrocha.vancol.services.SubscriptionService;
 
 import lombok.val;
 
@@ -29,54 +29,45 @@ import lombok.val;
 public class RunningController{
 
 	@Autowired
-	private SubscriptionRepository subRepository;
+	private SubscriptionService subscriptionService;
 
 	@Autowired
-	private RunningRepository runningRepo;
+	private RunningService runningService;
 	
 	@GetMapping
 	public ResponseEntity<List<Running>> getAll(){
-		val all = runningRepo.findAll();
+		val all = runningService.findAll();
 		return ResponseEntity.ok(all);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Running> getOne(@PathVariable("id") Long id){
-		val optional = runningRepo.findById(id);
+		val optional = runningService.findById(id);
 		return optional.map(ResponseEntity::ok)
-			.orElse(ResponseEntity.notFound().build());
+			.orElseThrow(() -> new ObjectNotFoundException(Running.class, id));
 	}
 	
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable("id") Long id){
-		runningRepo.deleteById(id);
+		runningService.deleteById(id);
 	}
 	
 	@PostMapping
 	public ResponseEntity<Running> save(@RequestBody Running running) {
-		Running runningSaved = runningRepo.save(running);
+		Running runningSaved = runningService.save(running);
 		return ResponseEntity.ok(runningSaved);
 	}
 
 	@PutMapping
 	public ResponseEntity<Running> update(@RequestBody Running running) {
-		boolean present = Optional.ofNullable(running)
-			.map(Running::getId)
-			.map(runningRepo::findById)
-			.map(op -> op.orElse(null))
-			.isPresent();
-		
-		if(!present)
-			return ResponseEntity.notFound().build();
-		
-		Running runningUpdated = runningRepo.save(running);
+		Running runningUpdated = runningService.update(running);
 		return ResponseEntity.ok(runningUpdated);
 	}
 	
 	@GetMapping
 	@RequestMapping("/{running_id}/subscriptions")
 	public ResponseEntity<Set<SubscriptionResponse>> getAll(@PathVariable("running_id") Long id){
-		val allSubscriptions = subRepository.findByRunning_Id(id);
+		val allSubscriptions = subscriptionService.findAllByRunningId(id);
 		Set<SubscriptionResponse> subscriptionsResponse = allSubscriptions.stream()
 			.map(sub -> new SubscriptionResponse(sub.getRunner(), sub))
 			.collect(toSet());
